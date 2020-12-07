@@ -1,8 +1,8 @@
 from collections import deque
 
-#filename = "input7.txt"
-#filename = "input7_ex.txt"
-filename = "input7_ex2.txt"
+filename = "input7.txt"
+#filename = "input7_ex.txt" #32
+#filename = "input7_ex2.txt" #126
 
 file1 = open(filename, 'r') 
 lines = file1.readlines() 
@@ -22,15 +22,12 @@ class Node:
         return self.depth
 
     def GetHolds(self):
-        total = 0
-        for c in self.children:
-            total = total + int(c.qty)
-
-        return total
+        #print(self.name,"holds",len(self.children),"bags")
+        return len(self.children)
 
     def insert(self, bag):
         bag.depth = self.depth + 1
-        print("adding qty",qty,"of",bag.name,"to",self.name)
+        #print("adding qty",1,"of",bag.name,"to",self.name)
         self.children.append(bag)
         
     def PrintTree(self):
@@ -41,6 +38,8 @@ class Node:
 
     def __repr__(self):
         global all_bags
+        #all_bags = all_bags + int(self.qty)*int(self.GetHolds())
+        #all_bags = all_bags + int(self.GetHolds()) + 1
         all_bags = all_bags + int(self.qty)*int(self.GetHolds())
         return f"Bag({self.name},{int(self.qty)*int(self.GetHolds())}): {self.children}"
 
@@ -102,33 +101,51 @@ for l in lines:
         for b in holds:
             name = b.split(' ')[2]+' '+b.split(' ')[3]
             qty = b.strip().split(' ')[0]
-
-            curnode.insert(Node(name,qty))
-
-
-for c in curnode.children:
-    #print(c.name)
-    tempnode = c
-
-    for l in lines:
-        temp = l.strip()
-        model = temp.split('contain')[0].strip()
-        if model.endswith('s'):
-            model = model[:-1]
-    
-        holds = temp.split('contain')[1].split(',')
-
-        if c.name in model:
-            #print(c.name,holds)
-            for b in holds:
-                name = b.split(' ')[2]+' '+b.split(' ')[3]
-                qty = b.strip().split(' ')[0]
-                temp = Node(b,qty)
-
-                tempnode.insert(Node(name,qty))
-                
-    
-#root.PrintTree()
+            if qty == 'no':
+                qty = 0
+            qty = int(qty)
+            for q in range(0,qty):
+                curnode.insert(Node(name,qty))
 
 print(root)
-print(all_bags)
+
+def add_children(curnode):
+
+    for c in curnode.children:
+        #print(c.name)
+        tempnode = c
+
+        for l in lines:
+            temp = l.strip()
+            model = temp.split('contain')[0].strip()
+            if model.endswith('s'):
+                model = model[:-1]
+    
+            holds = temp.split('contain')[1].split(',')
+
+            if c.name in model:
+                #print(c.name,holds)
+                
+                for b in holds:
+                    
+                    name = b.split(' ')[2]+' '+b.split(' ')[3]
+                    qty = b.strip().split(' ')[0]
+                    if qty == 'no':
+                        qty = 0
+                    qty = int(qty)
+
+                    #temp = Node(b,qty)
+
+                    for x in range(0,qty):
+                        tempnode.insert(Node(name,qty))
+                    #val = input("enter to continue")
+                    #print(qty,all_bags+1)
+                    
+                    add_children(tempnode)
+                
+add_children(curnode)    
+
+root.PrintTree()
+
+print(root)
+print(all_bags+1)
