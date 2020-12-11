@@ -13,7 +13,7 @@ for l in lines:
 
 nums.sort()
 nums.append(max(nums)+3)
-print(nums)
+#print(nums)
 
 
 ones = 0
@@ -36,14 +36,12 @@ temp = nums.copy()
 new_nums = nums.copy()
 
 nums = new_nums.copy()
-print(nums)
+#print(nums)
 
-#if 1 in nums:
-#    musts.append(1)
 
 for x in range(1,len(nums)):
     diff = nums[x]-nums[x-1]
-    #print(diff)
+
     if diff == 1:
         ones = ones + 1
     if diff == 2:
@@ -51,7 +49,7 @@ for x in range(1,len(nums)):
     if diff == 3:
         threes = threes + 1
         musts.append(nums[x])
-        print("must have ",nums[x])
+        #print("must have ",nums[x])
 
 for x in nums:
     if x not in musts:
@@ -63,7 +61,7 @@ temp = opts.copy()
 
 for x in range(0,len(temp)-1):
     if temp[x+1]-temp[x] > 3:
-        print("must have ",temp[x])
+        #print("must have ",temp[x])
         musts.append(temp[x])
         opts.remove(temp[x])
 
@@ -80,54 +78,22 @@ for x in range(0,len(temp)-3):
         print("removed",temp[x+1],temp[x+2])
         groups = groups + 1
 
-#todo refactor this bit
 pairs = 0
-opts.remove(16)
-opts.remove(17)
-pairs = pairs + 1
 
-opts.remove(22)
-opts.remove(23)
-pairs = pairs + 1
+for m in musts:
+    if m+1 in opts and m+2 in opts:
+        opts.remove(m+1)
+        opts.remove(m+2)
+        print("removed",m+1,m+2)
+        pairs = pairs + 1
 
-opts.remove(46)
-opts.remove(47)
-pairs = pairs + 1
 
-opts.remove(52)
-opts.remove(53)
-pairs = pairs + 1
-
-opts.remove(58)
-opts.remove(59)
-pairs = pairs + 1
-
-opts.remove(79)
-opts.remove(80)
-pairs = pairs + 1
-
-opts.remove(85)
-opts.remove(86)
-pairs = pairs + 1
-
-opts.remove(91)
-opts.remove(92)
-pairs = pairs + 1
-
-opts.remove(130)
-opts.remove(131)
-pairs = pairs + 1
-
-opts.remove(165)
-opts.remove(166)
-pairs = pairs + 1
 
 print("ones = ",ones)
-print("twos = ",twos)
+#print("twos = ",twos)
 print("threes = ",threes)
 
 print("musts",musts)
-#print("optsorig",temp)
 print("opts",opts)
 
 print(ones*threes)
@@ -138,12 +104,12 @@ floor = math.floor(len(nums)/3)
 print("len nums = ",len(nums),"floor",floor)
 
 for L in range(0, len(opts)+1):
-    print("L",L,len(opts),"-",valid)
+    
     for subset in itertools.combinations(opts, L):
         temp = list(subset)+musts
         temp.sort()
         works = True
-        #print(len(temp))
+        
         if len(temp) == 0:
             works = False
         elif temp[len(temp)-1] != max(nums):
@@ -159,5 +125,5 @@ for L in range(0, len(opts)+1):
             valid = valid + 1           
                 
 print(valid,"combos")
-#print(valid*(7**groups))
+
 print(valid*(7**groups)*(4**pairs))
