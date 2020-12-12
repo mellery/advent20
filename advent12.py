@@ -1,6 +1,9 @@
+import math
+
 filename = "input12.txt"
-#filename = "input12_ex.txt"
+#filename = "input12_ex1.txt"
 #filename = "input12_ex2.txt"
+
 file1 = open(filename, 'r') 
 lines = file1.readlines() 
 
@@ -14,12 +17,52 @@ for l in lines:
 
 x = 0
 y = 0
+wp_x = 10
+wp_y = 1
+if wp_y > 0:
+    wp_lat = 'north'
+else:
+    wp_lat = 'south'
+if wp_x < 0:
+    wp_lon = 'west'
+else:
+    wp_lon = 'east'
+
+print("waypoint at ",abs(wp_x),wp_lon,abs(wp_y),wp_lat)
 
 heading = 'E'
 
 #  N
 # W E
 #  S
+
+#                     L               R
+#             N (0,-1)->(-1,0)    (0,-1)->(1,0)
+#             E (1,0)->(0,-1)     (1,0)->(0,-1)
+#     N       S (0,-1)->(1,0)    (0,-1)->(-1,0)
+#    W E      W (-1,0)->(0,-1)   (-1,0)->(0,-1)
+#     S
+#     . 
+     
+
+def rotate_wp(x,y,wp_x,wp_y,turn,deg):
+    
+    if turn == 'R':
+        for r in range(deg//90):
+            temp_x = wp_x
+            temp_y = wp_y
+            wp_x = temp_y
+            wp_y = -temp_x
+        return wp_x,wp_y
+        
+    if turn == 'L':
+        for r in range(deg//90):
+            temp_x = wp_x
+            temp_y = wp_y
+            wp_x = -temp_y
+            wp_y = temp_x
+        return wp_x,wp_y
+    
 
 def turn_boat(heading,turn,deg):
     print("facing",heading,"turning",turn,deg,"degrees")
@@ -67,16 +110,16 @@ def turn_boat(heading,turn,deg):
     else:
         print("degree error",deg)
 
-def move_boat(x,y, mv,dist):
+def move(x,y, mv,dist):
     print("moving ",mv, dist)
     if mv == 'N':
-        y = y - dist
+        y = y + dist
 
     if mv == 'E':
         x = x + dist
 
     if mv == 'S':
-        y = y + dist
+        y = y - dist
 
     if mv == 'W':
         x = x - dist
@@ -87,15 +130,20 @@ for i in range(0, len(mv)):
     print(mv[i],dist[i])
 
     if mv[i] in ['N','E','S','W']:
-        x,y = move_boat(x,y,mv[i],dist[i])    
+        #x,y = move(x,y,mv[i],dist[i])    
+        wp_x,wp_y = move(wp_x,wp_y, mv[i],dist[i])
 
     if mv[i] in ['L','R']:
-        heading = turn_boat(heading,mv[i],dist[i])
+        #heading = turn_boat(heading,mv[i],dist[i])
+        wp_x,wp_y = rotate_wp(x,y,wp_x,wp_y,mv[i],dist[i])
         
     if mv[i] == 'F':
-        x,y = move_boat(x,y,heading,dist[i])
+        #x,y = move(x,y,heading,dist[i])
+        times = dist[i]
+        x = x + (wp_x*times)
+        y = y + (wp_y*times)
 
-    if y < 0:
+    if y > 0:
         lat = 'north'
     else:
         lat = 'south'
@@ -103,7 +151,19 @@ for i in range(0, len(mv)):
         lon = 'west'
     else:
         lon = 'east'
+    
+    if wp_y > 0:
+        wp_lat = 'north'
+    else:
+        wp_lat = 'south'
+    if wp_x < 0:
+        wp_lon = 'west'
+    else:
+        wp_lon = 'east'
 
-    print("boat at ",x,lon,',',y,lat,"hdg",heading)
+    print("boat at ",abs(x),lon,',',abs(y),lat,"hdg",heading)
+    print("wp at",abs(wp_x),wp_lon,",",abs(wp_y),wp_lat,"of boat")
 
 print(abs(x)+abs(y))
+#64127 too high
+#37083 too low
