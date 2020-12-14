@@ -1,4 +1,3 @@
-
 filename = "input13.txt"
 #filename = "input13_ex1.txt"
 
