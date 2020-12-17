@@ -12,7 +12,7 @@ world = {}
 def get_active(world):
     active = 0
     
-    for w,v in world.items():
+    for loc,v in world.items():
         if v == '#':
             active = active + 1
     
@@ -21,16 +21,18 @@ def get_active(world):
 
 def expand_world(world):
     state = copy.deepcopy(world)
-    for w, v in world.items():
-        x = w[0]
-        y = w[1]
-        z = w[2]
-        for zi in [z-1,z,z+1]:
-            for yi in [y-1,y,y+1]:
-                for xi in [x-1,x,x+1]:
-                    if (xi,yi,zi) not in state:
-                        #print("adding",xi,yi,zi)
-                        state[(xi,yi,zi)] = '.'
+    for loc, v in world.items():
+        x = loc[0]
+        y = loc[1]
+        z = loc[2]
+        w = loc[3]
+        for wi in [w-1,w,w+1]:
+            for zi in [z-1,z,z+1]:
+                for yi in [y-1,y,y+1]:
+                    for xi in [x-1,x,x+1]:
+                        if (xi,yi,zi,wi) not in state:
+                            #print("adding",xi,yi,zi,wi)
+                            state[(xi,yi,zi,wi)] = '.'
     world = copy.deepcopy(state)
     return world
 
@@ -38,10 +40,10 @@ def update_world(world):
     state = copy.deepcopy(world)
     changed = False
 
-    for w, v in world.items():
-        cur = world[w]
-        adj = get_adj(world,w)
-        #print(w,cur,"adj",adj)
+    for loc, v in world.items():
+        cur = world[loc]
+        adj = get_adj(world,loc)
+        #print(loc,cur,"adj",adj)
         if cur == '#' and (adj == 2 or adj == 3):
             cur == '#'
         elif cur == '#':
@@ -50,60 +52,66 @@ def update_world(world):
         elif cur == '.' and adj == 3:
             cur = '#'
             changed = True
-        state[w] = cur
-
-        
-
+        state[loc] = cur
         
     world = copy.deepcopy(state)
     return world, changed
 
 def print_world(world):
     #get levels
+    hypers = []
     levels = []
     rows = []
     cols = []
-    for w in world:
-        if w[0] not in rows:
-            rows.append(w[0])
-        if w[1] not in cols:
-            cols.append(w[1])
-        if w[2] not in levels:
-            levels.append(w[2])
+
+    for loc in world:
+        if loc[0] not in rows:
+            rows.append(loc[0])
+        if loc[1] not in cols:
+            cols.append(loc[1])
+        if loc[2] not in levels:
+            levels.append(loc[2])
+        if loc[3] not in hypers:
+            hypers.append(loc[3])
     levels.sort()
     rows.sort()
     cols.sort()
+    hypers.sort()
 
-    print(levels,rows,cols)
+    print(hypers,levels,rows,cols)
 
     active = 0
 
-    for z in levels:
-        print("\nz =",z)
-        #for y in range(0,3):
-        for y in cols:
-            temp = ""
-            #for x in range(0,3):
-            for x in rows:
-                if (x,y,z) in world:
-                    temp = temp + world[(x,y,z)]
-                    if world[(x,y,z)] == '#':
-                        active = active + 1
-            print(temp)
+    for w in hypers:
+        
+        for z in levels:
+            print("\nz =",z,"w =",w)
+            #for y in range(0,3):
+            for y in cols:
+                temp = ""
+                #for x in range(0,3):
+                for x in rows:
+                    if (x,y,z,w) in world:
+                        temp = temp + world[(x,y,z,w)]
+                        if world[(x,y,z,w)] == '#':
+                            active = active + 1
+                print(temp)
     #print("active =",active)
 
-def get_adj(world, w):
-    x = w[0]
-    y = w[1]
-    z = w[2]
+def get_adj(world, loc):
+    x = loc[0]
+    y = loc[1]
+    z = loc[2]
+    w = loc[3]
         
     adj = 0
-    for zi in [z-1,z,z+1]:
-        for yi in [y-1,y,y+1]:
-            for xi in [x-1,x,x+1]:
-                if (xi,yi,zi) != (x,y,z):
-                    if (xi,yi,zi) in world and world[(xi,yi,zi)] == '#':
-                        adj = adj + 1
+    for wi in [w-1,w,w+1]:
+        for zi in [z-1,z,z+1]:
+            for yi in [y-1,y,y+1]:
+                for xi in [x-1,x,x+1]:
+                    if (xi,yi,zi,wi) != (x,y,z,w):
+                        if (xi,yi,zi,wi) in world and world[(xi,yi,zi,wi)] == '#':
+                            adj = adj + 1
                        
     return adj
 
@@ -114,7 +122,7 @@ for l in lines:
     print(list(temp))
     x = 0
     for t in temp:
-        world[(x,y,z)] = t
+        world[(x,y,z,0)] = t
         x = x + 1
     y = y + 1
     
@@ -122,7 +130,9 @@ for l in lines:
 print("initial_state")
 print_world(world)
 
-for cycles in range(0,6):
+runs = 6
+
+for cycles in range(0,runs):
 
     world = expand_world(world)
     world, changed = update_world(world)
