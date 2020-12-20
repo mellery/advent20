@@ -1,5 +1,7 @@
-#filename = "input19.txt"
-filename = "input19_ex1.txt"
+import re
+
+filename = "input19.txt"
+#filename = "input19_ex1.txt"
 #filename = "input19_ex2.txt"
 
 file1 = open(filename, 'r') 
@@ -46,18 +48,18 @@ print(temp)
 
 while contains_digit(temp):
     temp = substitute_rule(temp)
-    #print(temp)
+    
 temp = temp.replace(' ','')
-#temp = temp.replace("(aa)","aa")
-#temp = temp.replace("(ab)","ab")
-#temp = temp.replace("(ba)","ba")
-#temp = temp.replace("(bb)","bb")
+
 print(temp)
 
-outer = temp[temp.find('(')+1:temp.rfind(')')]
-#temp = temp.replace('('+outer+')',c)
-valid = []
-valid.append('a'+outer.split('|')[0])
-valid.append('a'+outer.split('|')[1])
-print(valid)
+count = 0
 
+for m in messages:
+    matchObj = re.search(temp,m)
+    if matchObj:
+        if len(m) == len(matchObj.group(0)):
+            count = count + 1
+            print(m)
+
+print(count,"valid")
