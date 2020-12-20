@@ -44,14 +44,14 @@ for l in lines:
     temp = l.strip()
 
     if 'Tile' in temp:
-        print("new tile",temp)
+        #print("new tile",temp)
         if id not in Puzzle and id != 0:
             p = Piece()
             p.id = id
             p.image = tile.copy()
             Puzzle[id] = p
             tile = []
-            print("adding",id)
+            #print("adding",id)
         
         id = int(temp.split(' ')[1][:-1])
         
@@ -70,34 +70,34 @@ if id not in Puzzle and id != 0:
 corners = []
 
 for k1,v1 in Puzzle.items():
-    print('\n')
+    #print('\n')
     matches = 0
-    print(k1)
+    #print(k1)
     for k2,v2 in Puzzle.items():
         if k1 != k2:
             if v1.sideA() in v2.sides():
-                print(k1,'A matches',k2)
+                #print(k1,'A matches',k2)
                 matches = matches + 1
             if v1.sideB() in v2.sides():
-                print(k1,'B matches',k2)
+                #print(k1,'B matches',k2)
                 matches = matches + 1
             if v1.sideC() in v2.sides():
-                print(k1,'C matches',k2)
+                #print(k1,'C matches',k2)
                 matches = matches + 1
             if v1.sideD() in v2.sides():
-                print(k1,'D matches',k2)
+                #print(k1,'D matches',k2)
                 matches = matches + 1
             if v1.sideA()[::-1] in v2.sides():
-                print(k1,'A matches',k2)
+                #print(k1,'A matches',k2)
                 matches = matches + 1
             if v1.sideB()[::-1] in v2.sides():
-                print(k1,'B matches',k2)
+                #print(k1,'B matches',k2)
                 matches = matches + 1
             if v1.sideC()[::-1] in v2.sides():
-                print(k1,'C matches',k2)
+                #print(k1,'C matches',k2)
                 matches = matches + 1
             if v1.sideD()[::-1] in v2.sides():
-                print(k1,'D matches',k2)
+                #print(k1,'D matches',k2)
                 matches = matches + 1
     print(k1,"matches",matches,"other pieces")
     if matches == 2:
