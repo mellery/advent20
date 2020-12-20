@@ -1,6 +1,7 @@
 import re
 
-filename = "input19.txt"
+#filename = "input19.txt"
+filename = "input19p2.txt"
 #filename = "input19_ex1.txt"
 #filename = "input19_ex2.txt"
 
@@ -11,7 +12,7 @@ rules = {}
 messages = []
 for l in lines:
     temp = l.strip()
-    print(temp)
+    #print(temp)
     if ':' in temp:
         rules[int(temp.split(':')[0])] = temp.split(':')[1].strip()
     elif len(temp) > 1:
@@ -44,10 +45,12 @@ def substitute_rule(rule):
 
 temp = rules[0]
 
-print(temp)
+#print(temp)
 
-while contains_digit(temp):
+depth = 0
+while contains_digit(temp) and depth < 100:
     temp = substitute_rule(temp)
+    depth = depth + 1
     
 temp = temp.replace(' ','')
 
