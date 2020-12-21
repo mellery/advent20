@@ -2,8 +2,8 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-filename = "input20.txt"
-#filename = "input20_ex1.txt"
+#filename = "input20.txt"
+filename = "input20_ex1.txt"
 
 file1 = open(filename, 'r') 
 lines = file1.readlines() 
@@ -113,7 +113,7 @@ for k1,v1 in Puzzle.items():
                 #print(k1,'D matches',k2)
                 G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
-    print(k1,"matches",matches,"other pieces")
+    #print(k1,"matches",matches,"other pieces")
     if matches == 2:
         corners.append(k1)
 
@@ -123,11 +123,12 @@ for c in corners:
     ans = ans * c
 print(ans)
 
-
-#G.add_edges_from(
-#    [('A', 'B'), ('A', 'C'), ('D', 'B'), ('E', 'C'), ('E', 'F'),
-#     ('B', 'H'), ('B', 'G'), ('B', 'F'), ('C', 'G')])
-
-
+#pos = nx.multipartite_layout(G)
 nx.draw(G, with_labels=True)
 plt.show()
+
+d = list(nx.neighbors(G,str(corners[0])))
+print(d)
+
+d = nx.shortest_path_length(G,source='1951', target='1171')
+print(d)
