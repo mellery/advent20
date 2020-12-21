@@ -1,3 +1,7 @@
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+
 filename = "input20.txt"
 #filename = "input20_ex1.txt"
 
@@ -69,6 +73,8 @@ if id not in Puzzle and id != 0:
 
 corners = []
 
+G = nx.Graph()
+
 for k1,v1 in Puzzle.items():
     #print('\n')
     matches = 0
@@ -77,27 +83,35 @@ for k1,v1 in Puzzle.items():
         if k1 != k2:
             if v1.sideA() in v2.sides():
                 #print(k1,'A matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideB() in v2.sides():
                 #print(k1,'B matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideC() in v2.sides():
                 #print(k1,'C matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideD() in v2.sides():
                 #print(k1,'D matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideA()[::-1] in v2.sides():
                 #print(k1,'A matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideB()[::-1] in v2.sides():
                 #print(k1,'B matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideC()[::-1] in v2.sides():
                 #print(k1,'C matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
             if v1.sideD()[::-1] in v2.sides():
                 #print(k1,'D matches',k2)
+                G.add_edges_from([(str(k1),str(k2))])
                 matches = matches + 1
     print(k1,"matches",matches,"other pieces")
     if matches == 2:
@@ -108,3 +122,12 @@ ans = 1
 for c in corners:
     ans = ans * c
 print(ans)
+
+
+#G.add_edges_from(
+#    [('A', 'B'), ('A', 'C'), ('D', 'B'), ('E', 'C'), ('E', 'F'),
+#     ('B', 'H'), ('B', 'G'), ('B', 'F'), ('C', 'G')])
+
+
+nx.draw(G, with_labels=True)
+plt.show()
