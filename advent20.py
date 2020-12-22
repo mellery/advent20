@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import math
 import copy 
 
+import random
+
 import re
 
 filename = "input20.txt"
@@ -15,32 +17,29 @@ lines = file1.readlines()
 e = ['A','B','C','D']
 
 def match_edges(P1,P2):
-    print(P1.id,P2.id)
+    side = "none"
     if (P1.sideA() in P2.sides()):
-        print("A-" + e[P2.sides().index(P1.sideA())])
+        side = "A-" + e[P2.sides().index(P1.sideA())]
     elif (P1.sideB() in P2.sides()):
-        print("B-" + e[P2.sides().index(P1.sideB())])
+        side = "B-" + e[P2.sides().index(P1.sideB())]
     elif (P1.sideC() in P2.sides()):
-        print("C-" + e[P2.sides().index(P1.sideC())])
+        side = "C-" + e[P2.sides().index(P1.sideC())]
     elif (P1.sideD() in P2.sides()):
-        print("D-" + e[P2.sides().index(P1.sideD())])
+        side = "D-" + e[P2.sides().index(P1.sideD())]
     elif (P1.sideA()[::-1] in P2.sides()):
-        print("Arev-" + e[P2.sides().index(P1.sideA()[::-1])])
+        side = "Arev-" + e[P2.sides().index(P1.sideA()[::-1])]
     elif (P1.sideB()[::-1] in P2.sides()):
-        print("Brev-" + e[P2.sides().index(P1.sideB()[::-1])])
+        side = "Brev-" + e[P2.sides().index(P1.sideB()[::-1])]
     elif (P1.sideC()[::-1] in P2.sides()):
-        print("Crev-" + e[P2.sides().index(P1.sideC()[::-1])])
+        side = "Crev-" + e[P2.sides().index(P1.sideC()[::-1])]
     elif (P1.sideD()[::-1] in P2.sides()):
-        print("Drev-" + e[P2.sides().index(P1.sideD()[::-1])])
+        side = "Drev-" + e[P2.sides().index(P1.sideD()[::-1])]
     else:
-        print("no match")
+        side = "none"
+    return side
 
 def print_puzzle():
     for y in range(0,edge_len):
-        #title = ""
-        #for x in range(0,edge_len):
-        #    title = title + str(Puzzle[int(assembled[(x,y)])].id) + '\t\t'
-        #print(title)
         for r in range(0,10):
             line = ""
             for x in range(0,edge_len):
@@ -57,7 +56,6 @@ def get_puzzle2():
                 line = line + Puzzle[int(assembled[(x,y)])].image2[r] #+ '   '
             print(line)
             new_image.append(line)
-        #print('')
     return new_image
 
 def print_assembled_ids(assembled):
@@ -74,18 +72,13 @@ def print_assembled_ids(assembled):
 def look_for_monsters(p):
     monsters = 0
     for l in range(1,len(p.image)-1):
-        #print(l)
-        #todo is this search good enough?
+        #todo is this search good enough? - NO
         body = re.search('#....##....##....###',p.image[l])
         if body:
-            #print(body.span()[0])
             head = re.search('..................#.',p.image[l-1][body.span()[0]:body.span()[1]])
             tail = re.search('.#..#..#..#..#..#...',p.image[l+1][body.span()[0]:body.span()[1]])
     
             if head and body and tail:
-                #print(l-1,head)
-                #print(l,body)
-                #print(l+1,tail)
                 monsters = monsters + 1
     
     return monsters
@@ -284,37 +277,42 @@ for y in range(0,edge_len-1):
 
 print_assembled_ids(assembled)
 
-n = 3671
-temp = list(nx.neighbors(G,str(n)))
-for t in temp:
-    match_edges(Puzzle[n],Puzzle[int(t)])
 
 if filename == "input20_ex1.txt":
     Puzzle[1951].flipY()
-    Puzzle[2311].flipY()
-    Puzzle[2729].flipY()
-    Puzzle[1427].flipY()
-    Puzzle[2473].rotate90()
-    Puzzle[2473].flipY()
-    Puzzle[2971].rotate180()
-    Puzzle[2971].flipX()
-    Puzzle[1489].flipY()
-    Puzzle[1171].flipX()
-
+    
+#setup first piece
 if filename == "input20.txt":
     Puzzle[1831].rotate90()
     Puzzle[1831].flipY()
-    Puzzle[1423].rotate180()
-    Puzzle[1423].flipY()
-    #Puzzle[3607].flipX()
-    #Puzzle[3607].flipY()
-    Puzzle[3671].flipX()
-    Puzzle[3671].rotate270()
+    
+#align first column
+for y in range(0,edge_len-1):
+    result = match_edges(Puzzle[int(assembled[(0,y)])],Puzzle[int(assembled[0,y+1])])
+    while result != 'D-A':
+        op = random.choice([1,2,3])
+        if op == 1:
+            Puzzle[int(assembled[0,y+1])].rotate90()
+        elif op == 2:
+            Puzzle[int(assembled[0,y+1])].flipX()
+        elif op == 3:
+            Puzzle[int(assembled[0,y+1])].flipY()
+        result = match_edges(Puzzle[int(assembled[(0,y)])],Puzzle[int(assembled[0,y+1])])
 
-#n = 1831
-#temp = list(nx.neighbors(G,str(n)))
-#for t in temp:
-#    match_edges(Puzzle[n],Puzzle[int(t)])
+#align pieces
+for y in range(0,edge_len):
+    for x in range(0,edge_len-1):
+        result = match_edges(Puzzle[int(assembled[(x,y)])],Puzzle[int(assembled[x+1,y])])
+        while result != 'B-C':
+            op = random.choice([1,2,3])
+            if op == 1:
+                Puzzle[int(assembled[x+1,y])].rotate90()
+            elif op == 2:
+                Puzzle[int(assembled[x+1,y])].flipX()
+            elif op == 3:
+                Puzzle[int(assembled[x+1,y])].flipY()
+            result = match_edges(Puzzle[int(assembled[(x,y)])],Puzzle[int(assembled[x+1,y])])
+
 
 print_puzzle()
 
@@ -328,55 +326,62 @@ p = Piece()
 p.id = 0
 p.image = new_image.copy()
 
-#if filename == "input20_ex1.txt":
-#    p.rotate90()
-#    p.flipX()
-
-#if filename == "input20.txt":
-    
-
-print('')
-#p.printImage()
-
+max_monsters = 0
 for x in [0,90,180,270]:
     monsters = look_for_monsters(p)
-    if monsters > 0:
-        print(x,monsters)
+    if monsters > max_monsters:
+        max_monsters = monsters
+        p.printImage()
+    print(x,"orig",monsters)
     
     p.flipY()
     monsters = look_for_monsters(p)
-    if monsters > 0:
-        print(x,"flipy",monsters)
+    if monsters >= max_monsters:
+        max_monsters = monsters
+        p.printImage()
+    print(x,"flipy",monsters)
     p.flipY()
 
     p.flipX()
     monsters = look_for_monsters(p)
-    if monsters > 0:
-        print(x,"flipX",monsters)
+    if monsters >= max_monsters:
+        p.printImage()
+        max_monsters = monsters
+    print(x,"flipX",monsters)
     p.flipX()
 
     p.flipY()
     p.flipX()
     monsters = look_for_monsters(p)
-    if monsters > 0:
-        print(x,"flipYX",monsters)
+    if monsters >= max_monsters:
+        p.printImage()
+        max_monsters = monsters
+    print(x,"flipYX",monsters)
     p.flipX()
     p.flipY()
 
     p.flipX()
     p.flipY()
     monsters = look_for_monsters(p)
-    if monsters > 0:
-        print(x,"flipXY",monsters)
+    if monsters >= max_monsters:
+        p.printImage()
+        max_monsters = monsters
+    print(x,"flipXY",monsters)
     p.flipY()
     p.flipX()
 
 
     p.rotate90()
 
-monsters = look_for_monsters(p)
+#todo - regex doesn't find multiple monsters on a line, manually counted them on regexr.com
+max_monsters = 43
 
 pounds = 0
 for l in p.image:
     pounds = pounds + l.count('#')
-print(pounds - (monsters * 15))
+print("pounds:\t",pounds)
+print("monsters:\t",max_monsters)
+print("ans:\t",pounds - (max_monsters * 15))
+
+#2249 too high
+
