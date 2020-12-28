@@ -1,6 +1,6 @@
 filename = "input22.txt"
 #filename = "input22_ex1.txt"
-filename = "input22_ex2.txt"
+#filename = "input22_ex2.txt"
 
 file1 = open(filename, 'r') 
 lines = file1.readlines() 
@@ -10,8 +10,6 @@ p2deck = []
 
 p1found = False
 p2found = False
-
-games = []
 
 def calc_score(deck):
     size = len(deck)
@@ -27,30 +25,72 @@ def play_round(d1,d2):
     #print('P1 plays',d1[0])
     #print('P2 plays',d2[0])
 
-    if d1[0] > d2[0]:
-        #print("P1 wins")
-        d1.append(d1[0])
-        d1.append(d2[0])
-        d1.pop(0)
-        d2.pop(0)
+    if len(d1)-1 >= d1[0] and len(d2)-1 > d2[0]:
+        #print("playing sub-game to determine the winner...")
+        subgame = True
+        subround = 0
+        
+        temp1 = d1[1:d1[0]+1].copy()
+        temp2 = d2[1:d2[0]+1].copy()
+        
+        while len(temp1) > 0 and len(temp2) > 0 and subgame == True:
+            subround = subround + 1
+            print("\nsubround",subround)
+            subgame, temp1, temp2 = play_round(temp1,temp2)
 
-    elif d2[0] > d1[0]:
-        #print("P2 wins")
-        d2.append(d2[0])
-        d2.append(d1[0])
-        d1.pop(0)
-        d2.pop(0)
+        #print('subgame P1 deck',temp1)
+        #print('subgame P2 deck',temp2)
+        if len(temp1) > 0:
+            #print("P1 wins")
+            d1.append(d1[0])
+            d1.append(d2[0])
+            d1.pop(0)
+            d2.pop(0)
 
-    result = (calc_score(p1deck),calc_score(p2deck))
-    if result not in games:
-        games.append(result)
+        else:
+            #print("P2 wins")
+            d2.append(d2[0])
+            d2.append(d1[0])
+            d1.pop(0)
+            d2.pop(0)
+
+        result = (calc_score(d1),calc_score(d2))
+        #print("P1",result[0])
+        #print("P2",result[1])
+        if result not in games:
+            games.append(result)
+        else:
+            #print("subgamestop!")
+            return False, d1.copy(), d2.copy()
+
+        return True, d1.copy(), d2.copy()
+
     else:
-        print("stop!")
-        return False, d1.copy(), d2.copy()
 
-    print("P1",result[0])
-    print("P2",result[1])
-    return True, d1.copy(), d2.copy()
+        if d1[0] > d2[0]:
+            #print("P1 wins")
+            d1.append(d1[0])
+            d1.append(d2[0])
+            d1.pop(0)
+            d2.pop(0)
+
+        elif d2[0] > d1[0]:
+            #print("P2 wins")
+            d2.append(d2[0])
+            d2.append(d1[0])
+            d1.pop(0)
+            d2.pop(0)
+
+        result = (calc_score(d1),calc_score(d2))
+        #print("P1",result[0])
+        #print("P2",result[1])
+        if result not in games:
+            games.append(result)
+        else:
+            #print("stop!")
+            return False, d1.copy(), d2.copy()
+
+        return True, d1.copy(), d2.copy()
 
 for l in lines:
     temp = l.strip()
@@ -72,10 +112,12 @@ for l in lines:
 
 round = 0
 run = True
+games = []
 while len(p1deck) > 0 and len(p2deck) > 0 and run == True:
 
     round = round + 1
-    #print("\n---Round",round,"---")
+    print("\n---Round",round,"---")
+
     run, p1deck, p2deck = play_round(p1deck.copy(),p2deck.copy())
 
 
@@ -85,3 +127,6 @@ print("P2",p2deck)
 
 print("P1",calc_score(p1deck))
 print("P2",calc_score(p2deck))
+
+#round 285
+#14051 too low
