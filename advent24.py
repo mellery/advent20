@@ -46,22 +46,22 @@ def get_adj_black(pos):
     cur_x = pos[0]
     cur_y = pos[1]
 
-    if floor_map[(cur_x+1,cur_y)] == 1:
+    if (cur_x+1,cur_y) in floor_map and floor_map[(cur_x+1,cur_y)] == 1:
         black += 1
 
-    if floor_map[(cur_x+0.5,cur_y+1)] == 1:
+    if (cur_x+0.5,cur_y+1) in floor_map and floor_map[(cur_x+0.5,cur_y+1)] == 1:
         black += 1
 
-    if floor_map[(cur_x-0.5,cur_y+1)] == 1:
+    if (cur_x-0.5,cur_y+1) in floor_map and floor_map[(cur_x-0.5,cur_y+1)] == 1:
         black += 1
     
-    if floor_map[(cur_x-1,cur_y)] == 1:
+    if (cur_x-1,cur_y) in floor_map and floor_map[(cur_x-1,cur_y)] == 1:
         black += 1
         
-    if floor_map[(cur_x-0.5,cur_y-1)] == 1:
+    if (cur_x-0.5,cur_y-1) in floor_map and floor_map[(cur_x-0.5,cur_y-1)] == 1:
         black += 1
 
-    if floor_map[(cur_x+0.5,cur_y-1)] == 1:
+    if (cur_x+0.5,cur_y-1) in floor_map and floor_map[(cur_x+0.5,cur_y-1)] == 1:
         black += 1
 
     return black
@@ -133,12 +133,29 @@ for k,v in floor_map.items():
     else:
         white += 1
 
-new_floor = expand_floor(floor_map)
+floor_map = expand_floor(floor_map)
+new_floor = copy.deepcopy(floor_map)
 
-for k,v in new_floor.items():
-    print(k,v,get_adj_black(k))
+for k,v in floor_map.items():
+    adj_black = get_adj_black(k)
+    if v == 1: #black
+        if adj_black == 0 or adj_black > 2:
+            new_floor[k] = 0
+    elif v == 0:
+        if adj_black == 2:
+            new_floor[k] = 1
+
+    
+    #print(k,v,get_adj_black(k))
 
 #print(get_adj_black((0,0)))
+
+for k,v in new_floor.items():
+    #print(k,v)
+    if v == 1:
+        black += 1
+    else:
+        white += 1
 
 print("black tiles:",black)
 print("white tiles:",white)
