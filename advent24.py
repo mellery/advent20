@@ -1,9 +1,12 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 import copy
 #1 = black
 #0 = white (default)
 
-#filename = "input24.txt"
-filename = "input24_ex1.txt"
+filename = "input24.txt"
+#filename = "input24_ex1.txt"
 
 file1 = open(filename, 'r') 
 lines = file1.readlines() 
@@ -124,40 +127,52 @@ for l in lines:
 
     #print("now at",tile)
 
-black = 0
-white = 0
-for k,v in floor_map.items():
+#part 1
+#black = 0
+#white = 0
+#for k,v in floor_map.items():
     #print(k,v)
-    if v == 1:
-        black += 1
-    else:
-        white += 1
+#    if v == 1:
+#        black += 1
+#    else:
+#        white += 1
 
-floor_map = expand_floor(floor_map)
-new_floor = copy.deepcopy(floor_map)
+def update_day(floor_map,day):
 
-for k,v in floor_map.items():
-    adj_black = get_adj_black(k)
-    if v == 1: #black
-        if adj_black == 0 or adj_black > 2:
-            new_floor[k] = 0
-    elif v == 0:
-        if adj_black == 2:
-            new_floor[k] = 1
+    floor_map = expand_floor(floor_map)
+    new_floor = copy.deepcopy(floor_map)
 
-    
-    #print(k,v,get_adj_black(k))
+    for k,v in floor_map.items():
+        adj_black = get_adj_black(k)
+        if v == 1: #black
+            if adj_black == 0 or adj_black > 2:
+                new_floor[k] = 0
+        elif v == 0:
+            if adj_black == 2:
+                new_floor[k] = 1
 
-#print(get_adj_black((0,0)))
+    black = 0
+    for k,v in new_floor.items():
+        if v == 1:
+            black += 1
 
-for k,v in new_floor.items():
-    #print(k,v)
-    if v == 1:
-        black += 1
-    else:
-        white += 1
+    print("Day ",day,":",black)
 
-print("black tiles:",black)
-print("white tiles:",white)
-    
-#print(get_last_tile(split_instructions('nwwswee')))
+    floor_map = copy.deepcopy(new_floor)
+    return floor_map
+
+for day in range(1,101):
+    floor_map = update_day(floor_map,day)
+
+#for k,v in floor_map.items():
+#    x = k[0]
+#    y = k[1]
+#    color = v
+#    if v == 1:
+#        color = 'black'
+#    else:
+#        color = 'white'
+        
+#    plt.scatter(x,y,color=color, marker="h",edgecolors='black', s=10)
+
+#plt.show()
